@@ -1,10 +1,19 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 
+from women.models import Women
+
+menu = ["About site, Add article", "Contact us", "Log in"]
+
 
 # Create your views here.
 def index(request):
-    return HttpResponse("<h1>Main page</h1>")
+    posts = Women.objects.all()
+    return render(request, 'women/index.html', {"title": "Main page", "menu": menu, "posts": posts})
+
+
+def about(request):
+    return render(request, 'women/about.html', {"title": "About site", "menu": menu})
 
 
 def categories(request, catid):
