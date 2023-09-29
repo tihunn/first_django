@@ -1,19 +1,78 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{{ title }}</title>
+    <link type="text/css" href="{% static 'women/css/styles.css' %}" rel="stylesheet"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="shortcut icon" href="{% static 'women/images/main.ico' %}" type="image/x-icon"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-{% block menu %}
-    <ul>
-        {% for m in menu %}
-            <li>{{ m }}</li>
-        {% endfor %}
-    </ul>
-{% endblock menu %}
+<table class="table-page" border=0 cellpadding="0" cellspacing="0">
+    <tr>
+        <td valign=top>
+            {% block menu %}
+                <div class="header">
+                    <ul class="mainmenu" id="mainmenu">
+                        <li class="logo"><a href="#">
+                            <div class="logo"></div>
+                        </a></li>
+                        {% for m in menu %}
+                            {% if not forloop.last %}
+                                <li><a href="#">{{ m.title }}</a></li>
+                            {% else %}
+                                <li class="last"><a href="#">{{ m.title }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <div class="clear"></div>
+                </div>
+            {% endblock menu %}
+            <table class="table-content">
+                <tr>
+                    <!-- sidebar left -->
+                    <td valign="top" class="left-chapters">
+                        <ul id="leftchapter">
+                            <li class="selected">All catalogs</li>
+                            <li><a href="#">Actresses</a></li>
+                            <li><a href="#">Songs</a></li>
+                            <li><a href="#">Sportsmen</a></li>
+                            <li class="share">
+                                <p>His channel</p>
+                                <a class="share-yt"
+                                   href="https://www.youtube.com/channel/UClJzWfGWuGJL2t-3dYKcHTA/playlists"
+                                   target="_blank" rel="nofollow"></a>
+                            </li>
+                        </ul>
+                    </td>
+                    <!-- end sidebar -->
 
-{% block content %}
-{% endblock %}
+                    <td valign="top" class="content">
+                        <!--bread crumbs-->
+                        {% block breadcrumbs %}
+                        {% endblock %}
+
+                        <!--Content--->
+                        <div class="content-text">
+                            {% block content %}
+                            {% endblock content %}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+        <td valign=top>
+            <div id="footer">
+                <p>&copy; 2021 Частичное или полное копирование информации с данного сайта для распространения на других
+                    ресурсах, в том числе и бумажных, строго запрещено.</p>
+            </div>
+        </td>
+    </tr>
+</table>
 </body>
 </html>
