@@ -6,7 +6,7 @@
             <li>
             <div class="article-panel">
                 <p class="first">Category {{ post.cat }} </p>
-                <p class="first">: Date {{ post.time_update|date:"d-m-Y H:i:s" }}</p>
+                <p class="last">Date {{ post.time_update|date:"d-m-Y H:i:s" }}</p>
             </div>
 
             {% if post.photo %}
