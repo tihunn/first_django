@@ -1,22 +1,67 @@
-from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.shortcuts import render, redirect
 
-from women.models import Women
+from .models import *
 
-menu = ["About site", "Add article", "Contact us", "Log in"]
+menu = [{'title': "О сайте", 'url_name': 'about'},
+        {'title': "Добавить статью", 'url_name': 'add_page'},
+        {'title': "Обратная связь", 'url_name': 'contact'},
+        {'title': "Войти", 'url_name': 'login'}
+        ]
 
 
-# Create your views here.
 def index(request):
     posts = Women.objects.all()
-    return render(request,
-                  'women/index.html',
-                  {"title": "Main page", "menu": menu, "posts": posts})
+    cats = Category.objects.all()
+
+    context = {
+        'posts': posts,
+        'cats': cats,
+        'menu': menu,
+        'title': 'Main page',
+        'cat_selected': 0,
+    }
+
+    return render(request, 'women/index.html', context=context)
 
 
 def about(request):
-    return render(request, 'women/about.html', {"title": "About site", "menu": menu})
+    return render(request, 'women/about.html', {'menu': menu, 'title': 'About us'})
+
+
+def add_page(request):
+    return HttpResponse("Add article")
+
+
+def contact(request):
+    return HttpResponse("<h1>Contact us</h1>")
+
+
+def login(request):
+    return HttpResponse("<h1>Authorization</h1>")
 
 
 def page_not_found(request, exception):
-    return HttpResponseNotFound(f"<h1>Page not found (error 404)</p>")
+    return HttpResponseNotFound('<h1>Page not found</h1>')
+
+
+def show_post(request, post_id):
+    return HttpResponse(f"Views post with id = {post_id}")
+
+
+def show_category(request, cat_id):
+    posts = Women.objects.filter(cat_id=cat_id)
+    cats = Category.objects.all()
+
+    if len(posts) == 0:
+        raise Http404()
+
+    context = {
+        'posts': posts,
+        'cats': cats,
+        'menu': menu,
+        'title': 'View category',
+        'cat_selected': cat_id,
+    }
+
+    return render(request, 'women/index.html', context=context)
