@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .form import *
+from .forms import *
 from .models import *
 
 menu = [{'title': "About us", 'url_name': 'about'},
@@ -30,13 +30,11 @@ def about(request):
 
 def add_page(request):
     if request.method == "POST":
-        form = AddPostForm(request.POST)
+        form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect("home")
-            except:
-                form.add_error(None, "Error of add of post")
+            form.save()
+            return redirect("home")
+
     else:
         form = AddPostForm()
 
