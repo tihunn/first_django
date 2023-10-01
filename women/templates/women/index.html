@@ -18,7 +18,7 @@
                     {{ post.content|linebreaks|truncatewords:50 }}
                 {% endautoescape %}
                 <div class="clear"></div>
-                <p class="link-read-post"><a href="#">Read post</a></p>
+                <p class="link-read-post"><a href="{{ post.get_absolute_url }}">Read post</a></p>
             </li>
         {% endfor %}
     </ul>

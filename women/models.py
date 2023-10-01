@@ -6,6 +6,7 @@ from django.urls import reverse
 class Women(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
+    slug = models.SlugField(max_length=100, unique=True, db_index=True, verbose_name="URL")
     photo = models.ImageField(upload_to="photo/%Y/%m/%d")
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
@@ -16,7 +17,7 @@ class Women(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('posts', kwargs={'post_id', self.pk})
+        return reverse('post', kwargs={'post_slug': self.slug})
 
     class Meta:
         verbose_name = "Famous woman"
@@ -26,9 +27,15 @@ class Women(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name="category")
+    slug = models.SlugField(max_length=100, unique=True, db_index=True, verbose_name="URL")
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse("category", kwargs={"cat_id": self.pk})
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+        ordering = ["id"]
