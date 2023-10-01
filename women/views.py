@@ -43,8 +43,6 @@ def page_not_found(request, exception):
     return HttpResponseNotFound('<h1>Page not found</h1>')
 
 
-# def show_post(request, post_slug):
-#     return HttpResponse(f"Отображение статьи с id = {post_slug}")
 def show_post(request, post_slug):
     post = get_object_or_404(Women, slug=post_slug)
 
@@ -58,8 +56,9 @@ def show_post(request, post_slug):
     return render(request, 'women/post.html', context=context)
 
 
-def show_category(request, cat_id):
-    posts = Women.objects.filter(cat_id=cat_id)
+def show_category(request, cat_slug):
+    cat = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.objects.filter(cat_id=cat.pk)
 
     if len(posts) == 0:
         raise Http404()
@@ -68,7 +67,7 @@ def show_category(request, cat_id):
         'posts': posts,
         'menu': menu,
         'title': 'View category',
-        'cat_selected': cat_id,
+        'cat_selected': cat.pk,
     }
 
     return render(request, 'women/index.html', context=context)
