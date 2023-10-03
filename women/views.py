@@ -1,30 +1,88 @@
-from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, DetailView
 
-from women.models import Women
+from .forms import *
+from .models import *
 
-menu = ["About site, Add article", "Contact us", "Log in"]
+menu = [{'title': "About us", 'url_name': 'about'},
+        {'title': "Add article", 'url_name': 'add_page'},
+        {'title': "Contact us", 'url_name': 'contact'},
+        {'title': "log in", 'url_name': 'login'}
+        ]
 
 
-# Create your views here.
-def index(request):
-    posts = Women.objects.all()
-    return render(request, 'women/index.html', {"title": "Main page", "menu": menu, "posts": posts})
+class WomenHome(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['menu'] = menu
+        context['title'] = "Main page"
+        context['cat_selected'] = 0
+        return context
+
+    def get_queryset(self):
+        return Women.objects.filter(is_published=True)
 
 
 def about(request):
-    return render(request, 'women/about.html', {"title": "About site", "menu": menu})
+    return render(request, 'women/about.html', {'menu': menu, 'title': 'About us'})
 
 
-def categories(request, catid):
-    return HttpResponse(f"<h1>Catalog page</h1><p>{catid}</p>")
+class AddPage(CreateView):
+    form_class = AddPostForm
+    template_name = 'women/add_page.html'
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Add article"
+        context['menu'] = menu
+        return context
 
 
-def archive(request, year):
-    if 1970 < int(year) > 2023:
-        raise Http404()
-    return HttpResponse(f"<h1>Archive for year</h1><p>{year}</p>")
+def contact(request):
+    return HttpResponse("<h1>Contact us</h1>")
+
+
+def login(request):
+    return HttpResponse("<h1>Authorization</h1>")
 
 
 def page_not_found(request, exception):
-    return HttpResponseNotFound(f"<h1>Page not found (error 404)</p>")
+    return HttpResponseNotFound('<h1>Page not found</h1>')
+
+
+class ShowPost(DetailView):
+    model = Women
+    template_name = 'women/post.html'
+    slug_url_kwarg = 'post_slug'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = context['post']
+        context['menu'] = menu
+        context['cat_selected'] = context['post'].cat_id
+        return context
+
+
+class WomenCategory(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
+
+    def get_queryset(self):
+        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Category - ' + str(context['posts'][0].cat)
+        context['menu'] = menu
+        context['cat_selected'] = context['posts'][0].cat_id
+        return context
